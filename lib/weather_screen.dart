@@ -151,195 +151,211 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
           final weather = snapshot.data!;
 
-          return Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Card(
-                  elevation: 30,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        child: TextField(
-                          controller: _cityController,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          textAlignVertical: TextAlignVertical.center,
+          return SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Card(
+                      elevation: 30,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            child: TextField(
+                              controller: _cityController,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlignVertical: TextAlignVertical.center,
 
-                          decoration: const InputDecoration(
-                            hintText: "Search city...",
-                            prefixIcon: Icon(Icons.search),
-                            border: InputBorder.none, // important
+                              decoration: const InputDecoration(
+                                hintText: "Search city...",
+                                prefixIcon: Icon(Icons.search),
+                                border: InputBorder.none, // important
+                              ),
+                              onSubmitted: (value) {
+                                if (value.isNotEmpty) {
+                                  setState(() {
+                                    _service.updateCity(value);
+                                    weatherFuture = _service.fetchWeather();
+                                    hourlyFuture = _service
+                                        .fetchHourlyForecast();
+                                  });
+                                }
+                              },
+                            ),
                           ),
-                          onSubmitted: (value) {
-                            if (value.isNotEmpty) {
-                              setState(() {
-                                _service.updateCity(value);
-                                weatherFuture = _service.fetchWeather();
-                                hourlyFuture = _service.fetchHourlyForecast();
-                              });
-                            }
-                          },
                         ),
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
-                SizedBox(
-                  width: double.infinity,
+                    SizedBox(
+                      width: double.infinity,
 
-                  child: Card(
-                    elevation: 30,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                      child: Card(
+                        elevation: 30,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
                                 children: [
-                                  const Icon(Icons.location_on, size: 18),
-                                  const SizedBox(width: 4),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.location_on, size: 18),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        weather.cityName,
+                                        style: const TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 8),
+
                                   Text(
-                                    weather.cityName,
+                                    '${weather.temperature} °C',
                                     style: const TextStyle(
+                                      fontSize: 35,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  Icon(
+                                    getWeatherIcon(weather.condition),
+                                    size: 50,
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    weather.description,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 10),
+                                  const Text(
+                                    'Current Weather',
+                                    style: TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.w400,
                                     ),
                                   ),
                                 ],
                               ),
-
-                              const SizedBox(height: 8),
-
-                              Text(
-                                '${weather.temperature} °C',
-                                style: const TextStyle(
-                                  fontSize: 35,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              Icon(getWeatherIcon(weather.condition), size: 50),
-                              SizedBox(height: 4),
-                              Text(
-                                weather.description,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              ),
-
-                              const SizedBox(height: 10),
-                              const Text(
-                                'Current Weather',
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Weather Forecast',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
-                ),
-                const SizedBox(height: 2),
-                FutureBuilder<List<Map<String, dynamic>>>(
-                  future: hourlyFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text("Hourly error: ${snapshot.error}");
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Text("No hourly forecast available");
-                    }
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Weather Forecast',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    FutureBuilder<List<Map<String, dynamic>>>(
+                      future: hourlyFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text("Hourly error: ${snapshot.error}");
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
+                          return const Text("No hourly forecast available");
+                        }
 
-                    final filtered = snapshot.data!;
+                        final filtered = snapshot.data!;
 
-                    return SingleChildScrollView(
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: filtered.map((hourData) {
+                              int hour = int.parse(hourData["time"]);
+                              String displayTime = formatTime(hour);
+
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: HourlyForecastItem(
+                                  time: displayTime,
+                                  icon: getWeatherIcon(hourData['condition']),
+                                  temperature: "${hourData["temperature"]} °C",
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    Text(
+                      'Additional Information',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                        children: filtered.map((hourData) {
-                          int hour = int.parse(hourData["time"]);
-                          String displayTime = formatTime(hour);
+                        children: [
+                          AdditionalInfoItem(
+                            icon: Icons.water_drop,
+                            label: 'Humidity',
+                            value: '${weather.humidity} %',
+                          ),
 
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: HourlyForecastItem(
-                              time: displayTime,
-                              icon: getWeatherIcon(hourData['condition']),
-                              temperature: "${hourData["temperature"]} °C",
-                            ),
-                          );
-                        }).toList(),
+                          SizedBox(width: 8),
+
+                          AdditionalInfoItem(
+                            icon: Icons.air,
+                            label: 'Wind Speed',
+                            value: '${weather.windSpeed} m/s',
+                          ),
+
+                          SizedBox(width: 8),
+                          AdditionalInfoItem(
+                            icon: Icons.compress,
+                            label: 'Pressure',
+                            value: '${weather.pressure} hPa',
+                          ),
+                        ],
                       ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
-
-                const SizedBox(height: 20),
-
-                Text(
-                  'Additional Information',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      AdditionalInfoItem(
-                        icon: Icons.water_drop,
-                        label: 'Humidity',
-                        value: '${weather.humidity} %',
-                      ),
-
-                      SizedBox(width: 8),
-
-                      AdditionalInfoItem(
-                        icon: Icons.air,
-                        label: 'Wind Speed',
-                        value: '${weather.windSpeed} m/s',
-                      ),
-
-                      SizedBox(width: 8),
-                      AdditionalInfoItem(
-                        icon: Icons.compress,
-                        label: 'Pressure',
-                        value: '${weather.pressure} hPa',
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
           );
         },

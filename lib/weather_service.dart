@@ -123,7 +123,7 @@ class WeatherService {
 
       List<Map<String, dynamic>> filtered = [];
 
-      for (int i = 0; i < 8; i++) {
+      for (int i = 0; i < list.length && i < 8; i++) {
         final item = list[i];
 
         int dt = item['dt'];
